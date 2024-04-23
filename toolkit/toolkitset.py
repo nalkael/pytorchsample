@@ -19,3 +19,15 @@ class Toolkits:
         with tarfile.open(file_path, type) as tar:
             tar.extractall(extract_dir)
             tar.close()
+
+    # Show file information
+    def show_info(self, file_path = ''):
+        if os.path.exists(file_path):
+            #get file state information
+            file_stat = os.stat(file_path)
+            # file size
+            file_size = file_stat.st_size
+
+            # print file information
+            print(f"File: {file_path}")
+            print(f"Size: {file_size}")
