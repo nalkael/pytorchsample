@@ -4,6 +4,7 @@ import torchvision
 import torchaudio
 import tarfile
 from torchvision.datasets.utils import download_url
+from torch.utils.data import random_split
 
 #print(torch.__version__)
 from toolkit.toolkitset import Toolkits
@@ -25,3 +26,10 @@ classes = os.listdir(path= './data/cifar10/test')
 print(classes)
 
 # example of cifar10 dataset
+data_dir = './data/cifar10'
+airplane_files = os.listdir('./data/cifar10/test/airplane')
+print(f'No of test examples of airplanes: {len(airplane_files)}')
+print(airplane_files[5:10])
+
+
+dataset = Toolkits.load_image_dataset('./data/some')

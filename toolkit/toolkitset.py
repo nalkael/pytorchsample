@@ -2,8 +2,11 @@ import os
 import torch
 import torchvision
 from torchvision.datasets.utils import download_url
-#from torch.utils.data import random_split
+from torch.utils.data import random_split
 import tarfile
+from torchvision.datasets import ImageFolder
+from torchvision.transforms import ToTensor
+from PIL import Image
 
 class Toolkits:
     def __init__(self):
@@ -31,3 +34,10 @@ class Toolkits:
             # print file information
             print(f"File: {file_path}")
             print(f"Size: {file_size}")
+    
+    # Load image dataset for Directory
+    def load_image_dataset(self, dataset_dir='', transform=ToTensor()):
+        if os.path.exists(dataset_dir):
+            pass
+        else:
+            print(f'Directory of \"{dataset_dir}\" does not exist.')
