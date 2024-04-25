@@ -7,6 +7,8 @@ import tarfile
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import ToTensor
 from PIL import Image
+import matplotlib
+import matplotlib.pyplot as plt
 
 class Toolkits:
     def __init__(self):
@@ -38,6 +40,7 @@ class Toolkits:
     # Load image dataset for Directory
     def load_image_dataset(self, dataset_dir='', transform=ToTensor()):
         if os.path.exists(dataset_dir):
-            pass
+            return ImageFolder(dataset_dir, transform)
         else:
             print(f'Directory of \"{dataset_dir}\" does not exist.')
+            return None
