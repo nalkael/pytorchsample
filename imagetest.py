@@ -9,8 +9,10 @@ from torchvision.transforms import ToTensor
 import matplotlib
 import matplotlib.pyplot as plt
 from torch.utils.data.dataloader import DataLoader
+from torchvision.utils import make_grid
 
-#print(torch.__version__)
+# print(torch.__version__)
+# print(torchvision.__version__)
 from toolkit.toolkitset import Toolkits
 
 toolkit = Toolkits()
@@ -80,6 +82,40 @@ train_size = len(dataset) - val_size
 train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 # print(len(train_dataset)), print(len(val_dataset))
 
+
+# create data loaders for training and validation
+# load data in batches
 batch_size = 64
+
+train_dl = DataLoader(train_dataset, batch_size, shuffle=True, num_workers=2, pin_memory=True)
+val_dl = DataLoader(train_dataset, batch_size*2, shuffle=True, num_workers=2, pin_memory=True)
+
+"""
+show batch images from the dataset
+with matplot library
+more details to look up into
+"""
+# look at the batches of images from the dataset using the make_grid method from torchvision
+def show_batch(dataload):
+    dataload_iter = iter(dataload)
+    images, labels = next(dataload_iter)
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.set_xticks([]); ax.set_yticks([])
+    ax. imshow(make_grid(images, nrow=16).permute(1, 2, 0))
+    plt.show()
+
+show_batch(train_dl)
+show_batch(val_dl)
+
+"""
+define a simple convolutional neural network
+"""
+
+# a foo kernel function
+def apply_kernel(image, kernel):
+    ri, ci = image.shape
+    rk, ck = kernel.shape
+    ro, co = ri - rk + 1, ci - ck + 1
+    output = torch.zeros([ro, co])
 
 
