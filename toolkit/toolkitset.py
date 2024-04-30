@@ -44,3 +44,14 @@ class Toolkits:
         else:
             print(f'Directory of \"{dataset_dir}\" does not exist.')
             return None
+
+# a couple of helper functions to seamlessly use a GPU    
+def get_defualt_device():
+    if torch.cuda.is_available():
+        return torch.device('cuda')
+    else:
+        return torch.device('cpu')
+    
+
+def move_data_to_device(data, device):
+    pass

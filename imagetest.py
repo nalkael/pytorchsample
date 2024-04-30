@@ -14,6 +14,7 @@ from torchvision.utils import make_grid
 # print(torch.__version__)
 # print(torchvision.__version__)
 from toolkit.toolkitset import Toolkits
+import toolkit.toolkitset as tks
 
 toolkit = Toolkits()
 
@@ -104,8 +105,8 @@ def show_batch(dataload):
     ax. imshow(make_grid(images, nrow=16).permute(1, 2, 0))
     plt.show()
 
-show_batch(train_dl)
-show_batch(val_dl)
+#show_batch(train_dl)
+#show_batch(val_dl)
 
 """
 define a simple convolutional neural network
@@ -117,5 +118,125 @@ def apply_kernel(image, kernel):
     rk, ck = kernel.shape
     ro, co = ri - rk + 1, ci - ck + 1
     output = torch.zeros([ro, co])
+    for i in range(ro):
+        for j in range(co):
+            output[i, j] = torch.sum(image[i:i+rk, j:j+ck] * kernel)
+    return output
+
+sample_image = torch.tensor([
+    [3, 3, 2, 1, 0], 
+    [0, 0, 1, 3, 1], 
+    [3, 1, 2, 2, 3], 
+    [2, 0, 0, 2, 2], 
+    [2, 0, 0, 0, 1]
+], dtype=torch.float32)
+
+sample_kernel = torch.tensor([
+    [0, 1, 2], 
+    [2, 2, 0], 
+    [0, 1, 2]
+], dtype=torch.float32)
+
+#print(apply_kernel(sample_image, sample_kernel))
+
+# kernel, max-pooling
+
+import torch.nn as nn
+import torch.nn.functional as func
+
+"""
+nn.Sequential in PyTorch is a container module 
+that allows to stack multiple layers or modules sequentially. 
+"""
+
+simple_model = nn.Sequential(
+    nn.Conv2d(in_channels=3, out_channels=8, kernel_size=3, stride=1, padding=1),
+    nn.MaxPool2d(2, 2)
+)
+
+for images, labels in train_dl:
+    print(images.shape)
+    out = simple_model(images)
+    print(out.shape)
+    break
+
+# calculate accuracy for a classification taks in PyTorch
+def accuracy(outputs, labels):
+    # Compute predicted labels by finding the index of maximum log-probability
+    _, predictions = torch.max(outputs, 1)
+    # calculate accuracy
+    correct = (predictions == labels).sum().item()
+    accuracy = correct / labels.size(0)
+    return accuracy
+
+# define a model which contains methods
+class ImageClassification(nn.Module):
+    def training_step(self, batch):
+        images, labels = batch
+        out = self(images) # Generate predictions
+        loss = func.cross_entropy(out, labels) # calculate loss
+        return loss
+
+    def valiation_step(self, batch):
+        images, labels = batch
+        out = self(images) # Generate predictions
+        loss = func.cross_entropy(out, labels)
+        acc = accuracy(out, labels)
+        return {'val_loss': loss.detach(), 'val_acc': acc}
+    
+    def validation_epoch_end(self, outputs):
+        batch_losses = [x['val_loss'] for x in outputs]
+        epoch_loss = torch.stack(batch_losses).mean()   # Combine losses
+        batch_accs = [x['val_acc'] for x in outputs]
+        epoch_acc = torch.stack(batch_accs).mean()      # Combine accuracies
+        return {'val_loss': epoch_loss.item(), 'val_acc': epoch_acc.item()}
+        
+    def epoch_end(self, epoch, result):
+        print("Epoch [{}], train_loss: {:.4f}, val_loss: {:.4f}, val_acc: {:.4f}".format(
+            epoch, result['train_loss'], result['val_loss'], result['val_acc']))
+
+class Cifar10CnnModel(ImageClassification):
+    def __init__(self):
+        super().__init__()
+        self.network = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2), # output: 64 x 16 x 16
+
+            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(128, 128, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2), # output: 128 x 8 x 8
+
+            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2, 2), # output: 256 x 4 x 4
+
+            nn.Flatten(), 
+            nn.Linear(256*4*4, 1024),
+            nn.ReLU(),
+            nn.Linear(1024, 512),
+            nn.ReLU(),
+            nn.Linear(512, 10))
+        
+    def forward(self, xb):
+        return self.network(xb)
 
 
+model = Cifar10CnnModel()
+print(model)
+
+for images, labels in train_dl:
+    print(images.shape)
+    out = model(images)
+    print(out.shape)
+    print(out[0])
+    break
+
+# load data into gpu
+print(tks.get_defualt_device())
