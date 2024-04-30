@@ -239,4 +239,4 @@ for images, labels in train_dl:
     break
 
 # load data into gpu
-print(tks.get_defualt_device())
+tks.get_defualt_device()

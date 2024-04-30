@@ -54,4 +54,7 @@ def get_defualt_device():
     
 
 def move_data_to_device(data, device):
-    pass
+    """Move tensors to chosen device"""
+    if isinstance(data, (list, tuple)):
+        return [move_data_to_device(x, device) for x in data]
+    return data.to(device, non_blocking=True)
