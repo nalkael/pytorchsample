@@ -10,25 +10,25 @@ from PIL import Image
 import matplotlib
 import matplotlib.pyplot as plt
 
+
 class Toolkits:
     def __init__(self):
-       pass 
+        pass
 
     # Download the dataset
     def download_dataset(self, dataset_url="", file_dir=""):
         download_url(dataset_url, file_dir)
 
-    
     # Extract the packed file
-    def extract_file(self, file_path = "", type = 'r:gz', extract_dir = ""):
+    def extract_file(self, file_path="", type="r:gz", extract_dir=""):
         with tarfile.open(file_path, type) as tar:
             tar.extractall(extract_dir)
             tar.close()
 
     # Show file information
-    def show_info(self, file_path = ''):
+    def show_info(self, file_path=""):
         if os.path.exists(file_path):
-            #get file state information
+            # get file state information
             file_stat = os.stat(file_path)
             # file size
             file_size = file_stat.st_size
@@ -36,22 +36,23 @@ class Toolkits:
             # print file information
             print(f"File: {file_path}")
             print(f"Size: {file_size}")
-    
+
     # Load image dataset for Directory
-    def load_image_dataset(self, dataset_dir='', transform=ToTensor()):
+    def load_image_dataset(self, dataset_dir="", transform=ToTensor()):
         if os.path.exists(dataset_dir):
             return ImageFolder(dataset_dir, transform)
         else:
-            print(f'Directory of \"{dataset_dir}\" does not exist.')
+            print(f'Directory of "{dataset_dir}" does not exist.')
             return None
 
-# a couple of helper functions to seamlessly use a GPU    
+
+# a couple of helper functions to seamlessly use a GPU
 def get_defualt_device():
     if torch.cuda.is_available():
-        return torch.device('cuda')
+        return torch.device("cuda")
     else:
-        return torch.device('cpu')
-    
+        return torch.device("cpu")
+
 
 def move_data_to_device(data, device):
     """Move tensors to chosen device"""
