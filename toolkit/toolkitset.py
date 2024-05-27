@@ -9,7 +9,8 @@ from torchvision.transforms import ToTensor
 from PIL import Image
 import matplotlib
 import matplotlib.pyplot as plt
-
+import cv2
+import numpy as np
 
 class Toolkits:
     def __init__(self):
@@ -59,3 +60,35 @@ def move_data_to_device(data, device):
     if isinstance(data, (list, tuple)):
         return [move_data_to_device(x, device) for x in data]
     return data.to(device, non_blocking=True)
+
+class yolo_rotate_box:
+    def __init__(self, image_name, image_ext, angle) -> None:
+        assert os.path.isfile(image_name + image_ext) # path of image file
+        assert os.path.isfile(image_name + '.txt') # bounding-box info
+
+        self.image_name = image_name
+        self.image_ext = image_ext # jpg, jpeg, png, tiff...
+        self.angle = angle
+
+        # load image with cv2 function
+        self.image = cv2.imread(self.image_name + self.image_ext, cv2.IMREAD_COLOR)
+
+        # create 2D-rotation matrix
+        # to rorate a point, it needs to be multiplied by the rotation matrix
+        # height and width of the rotated box need to be recalculated, YOLO only process parallel bounding-boxs
+        rotation_angel = self.angle * np.pi / 180
+        self.rotation_matrix = np.array([[np.cos(rotation_angel), -np.sin(rotation_angel)], 
+                                         [np.sin(rotation_angel), np.cos(rotation_angel)]])
+        
+    def rotate_image(self):
+        '''
+        image_name: image file name
+        image_ext: extension of image file(.jpg, .jpeg, .tiff, .png, ...)
+        angle: angle, with which the image should be rotated, presented in degree
+        image: the image file read by cv2, presented in an multi-dimension array
+        rotation_matrix: rotate the point by multiplication with the matrix
+
+        rotate_image: rotate an image and expands image to avoid cropping
+        '''
+        height, width = self.image[:2] # image contains 3 dimensions
+        pass
