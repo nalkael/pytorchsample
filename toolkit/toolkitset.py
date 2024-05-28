@@ -63,6 +63,7 @@ def move_data_to_device(data, device):
 
 class yolo_rotate_box:
     def __init__(self, image_name, image_ext, angle) -> None:
+        # absolute path and relative path
         assert os.path.isfile(image_name + image_ext) # path of image file
         assert os.path.isfile(image_name + '.txt') # bounding-box info
 
