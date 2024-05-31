@@ -39,7 +39,19 @@ def draw_bbox(image, bbox_file):
     
     # display images with bounding boxes
     cv2.imshow('Image with bounding boxes', img)
-    cv2.waitKey(0)
+    # cv2.waitKey(0) # read an arbitary input from keyboard to interrupt
+    while True:
+        # wait for 1 ms to check if any key is pressed
+        key = cv2.waitKey(1)
+
+        # if a key is pressed, end the loop
+        if key != -1:
+            break
+
+        if cv2.getWindowProperty('Image with bounding boxes', cv2.WND_PROP_VISIBLE) < 1:
+            break
+
+    # destroy all opencv windows
     cv2.destroyAllWindows()
 
 # a simple example
