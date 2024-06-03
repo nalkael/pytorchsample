@@ -32,4 +32,5 @@ for i, (jpg_name, txt_name) in enumerate(zip(jpg_files, txt_files), start=1):
     print(f"renamed {txt_old_path}' to {txt_new_path}")
 
 print('Files have been renamed successfully.')
-    
+
+# sort the jpg and txt files into different folders
