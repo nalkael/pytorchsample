@@ -4,13 +4,14 @@ import os
 folder_path = '/home/rdluhu/Dokumente/preprecess/sample_images/images'
 
 # get list of all JPG and TXT files in the folder
-jpg_files = sorted([f for f in os.listdir(folder_path) if f.endswith('.jpg')])
-txt_files = sorted([f for f in os.listdir(folder_path) if f.endswith('.txt')])
+jpg_files = sorted([f for f in os.listdir(folder_path) if f.lower().endswith('.jpg')])
+txt_files = sorted([f for f in os.listdir(folder_path) if f.lower().endswith('.txt')])
 
 try:
     assert len(jpg_files) == len(txt_files), f"{len(jpg_files)} jpg files, {len(txt_files)} txt files."
 except AssertionError as e:
     print(f"Error: {e}")
+    print('numbers of images and labels are not the same.')
 
 if len(jpg_files) != len(txt_files):
     raise ValueError("The number of JPG files does not match the number of TXT files.")
