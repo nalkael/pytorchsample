@@ -4,4 +4,3 @@ Schieberdeckel - Wasser
 Schieberdeckel - Gas
 Unterflurhydrant
 Sinkkaesten
-Other Object
